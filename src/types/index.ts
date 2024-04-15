@@ -4,20 +4,11 @@
 export interface IBasketView {
 	items: HTMLElement[];
 	total: number;
-	selected: string[];
-}
-
-// modal
-// регулярка?
-
-export interface IModalData {
-	content: HTMLElement;
 }
 
 //customer
 
 export interface ICustomerForm {
-	payment: string;
 	address: string;
 	email: string;
 	phone: string;
@@ -27,10 +18,9 @@ export interface IOrder extends ICustomerForm {
 	items: string[];
 }
 
-export interface IPage {
+export interface IPageView {
 	counter: number;
 	catalog: HTMLElement[];
-	locked: boolean;
 }
 
 export interface IModalData {
@@ -46,15 +36,13 @@ export interface ICard {
 	price: number;
 }
 
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
+export type FormErrors = Partial<Record<keyof ICustomerForm, string>>;
 
 export interface IAppState {
 	catalog: ICard[];
 	basket: string[];
-	preview: string | null;
-	order: IOrder | null;
-}
 
-export interface IOrderResult {
-	id: string;
+	payment: string;
+
+	order: IOrder | null;
 }
