@@ -18,6 +18,10 @@ export interface IOrder extends ICustomerForm {
 	items: string[];
 }
 
+export interface IOrderResult {
+	id: string;
+}
+
 export interface IPageView {
 	counter: number;
 	catalog: HTMLElement[];
@@ -41,8 +45,6 @@ export type FormErrors = Partial<Record<keyof ICustomerForm, string>>;
 export interface IAppState {
 	catalog: ICard[];
 	basket: string[];
-
 	payment: string;
-
 	order: IOrder | null;
 }

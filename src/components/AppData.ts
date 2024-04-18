@@ -4,9 +4,9 @@
 import { Model } from './base/Model';
 import { FormErrors, IAppState, ICard, IOrder, ICustomerForm } from '../types';
 
-// export type CatalogChangeEvent = {
-//     catalog: LotItem[]
-// };
+export type CatalogLoad = {
+	catalog: CardItem[];
+};
 
 export class CardItem extends Model<ICard> {
 	about: string;
@@ -32,7 +32,6 @@ export class AppState extends Model<IAppState> {
 	basket: string[];
 	catalog: CardItem[];
 	order: IOrder = {
-		payment: '',
 		address: '',
 		email: '',
 		phone: '',
