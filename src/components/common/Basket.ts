@@ -23,15 +23,15 @@ export class Basket extends Component<IBasketView> {
 
 		this._list = ensureElement<HTMLElement>('.basket__list', this.container);
 		this._total = this.container.querySelector('.basket__total');
-		// this._button = this.container.querySelector('.basket__action');
+		this._button = this.container.querySelector('.basket__action');
 
-		// if (this._button) {
-		//     this._button.addEventListener('click', () => {
-		//         events.emit('order:open');
-		//     });
-		// }
+		if (this._button) {
+			this._button.addEventListener('click', () => {
+				events.emit('order:open');
+			});
+		}
 
-		// this.items = [];
+		this.items = [];
 	}
 
 	set items(items: HTMLElement[]) {

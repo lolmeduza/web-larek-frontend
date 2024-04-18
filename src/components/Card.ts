@@ -7,6 +7,7 @@ interface ICardActions {
 
 export interface ICard<T> {
 	title: string;
+	price: number;
 	description?: string | string[];
 	image: string;
 	status: T;
@@ -17,7 +18,7 @@ export class Card<T> extends Component<ICard<T>> {
 	protected _image?: HTMLImageElement;
 	protected _description?: HTMLElement;
 	protected _button?: HTMLButtonElement;
-
+	protected _price?: HTMLElement;
 	constructor(
 		protected blockName: string,
 		container: HTMLElement,
@@ -31,7 +32,8 @@ export class Card<T> extends Component<ICard<T>> {
 			container
 		);
 		this._button = container.querySelector(`.${blockName}__button`);
-		this._description = container.querySelector(`.${blockName}__description`);
+		this._description = container.querySelector(`.${blockName}__text`);
+		this._price = container.querySelector(`.${blockName}__price`);
 
 		if (actions?.onClick) {
 			if (this._button) {
@@ -60,6 +62,10 @@ export class Card<T> extends Component<ICard<T>> {
 
 	set image(value: string) {
 		this.setImage(this._image, value, this.title);
+	}
+
+	set price(value: number) {
+		this.setText(this._price, value);
 	}
 
 	set description(value: string | string[]) {
@@ -97,12 +103,12 @@ export type AuctionStatus = {
 	history: number[];
 };
 
-export class AuctionItem extends Card<HTMLElement> {
+export class ModalItem extends Card<HTMLElement> {
 	protected _status: HTMLElement;
 
 	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('lot', container, actions);
-		this._status = ensureElement<HTMLElement>(`.lot__status`, container);
+		super('card', container, actions);
+		// this._status = ensureElement<HTMLElement>(`.lot__status`, container);
 	}
 
 	set status(content: HTMLElement) {
