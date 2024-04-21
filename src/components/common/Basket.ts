@@ -9,21 +9,25 @@ import { EventEmitter } from '../base/events';
 
 interface IBasketView {
 	items: HTMLElement[];
-	total: number;
+	price: number;
 	selected: string[];
 }
 
+export type TabActions = {
+	onClick: (tab: string) => void;
+};
+
 export class Basket extends Component<IBasketView> {
 	protected _list: HTMLElement;
-	protected _total: HTMLElement;
+	protected _price: HTMLElement;
 	protected _button: HTMLElement;
 
 	constructor(container: HTMLElement, protected events: EventEmitter) {
 		super(container);
 
 		this._list = ensureElement<HTMLElement>('.basket__list', this.container);
-		this._total = this.container.querySelector('.basket__total');
-		this._button = this.container.querySelector('.basket__action');
+		this._price = this.container.querySelector('.basket__price');
+		this._button = this.container.querySelector('.basket__button');
 
 		if (this._button) {
 			this._button.addEventListener('click', () => {

@@ -16,6 +16,10 @@ export class CardItem extends Model<ICard> {
 	title: string;
 	price: number;
 
+	addToCard() {
+		this.emitChanges('card:change', { id: this.id, price: this.price });
+	}
+
 	// placeBid(price: number): void {
 	//     this.price = price;
 	//     this.history = [...this.history.slice(1), price];

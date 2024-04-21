@@ -132,7 +132,7 @@ export class Auction extends Component<AuctionStatus> {
 	constructor(container: HTMLElement, actions?: IAuctionActions) {
 		super(container);
 
-		this._time = ensureElement<HTMLElement>(`.lot__auction-timer`, container);
+		// this._time = ensureElement<HTMLElement>(`.lot__auction-timer`, container);
 		this._label = ensureElement<HTMLElement>(`.lot__auction-text`, container);
 		this._button = ensureElement<HTMLButtonElement>(`.button`, container);
 		this._input = ensureElement<HTMLInputElement>(`.form__input`, container);
@@ -152,26 +152,26 @@ export class Auction extends Component<AuctionStatus> {
 	}
 }
 
-export interface BidStatus {
-	amount: number;
-	status: boolean;
-}
+// export interface BidStatus {
+// 	amount: number;
+// 	status: boolean;
+// }
 
-export class BidItem extends Card<BidStatus> {
-	protected _amount: HTMLElement;
-	protected _status: HTMLElement;
-	protected _selector: HTMLInputElement;
+// export class BidItem extends Card<BidStatus> {
+// 	protected _amount: HTMLElement;
+// 	protected _status: HTMLElement;
+// 	protected _selector: HTMLInputElement;
 
-	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('bid', container, actions);
-		this._amount = ensureElement<HTMLElement>(`.bid__amount`, container);
-		this._status = ensureElement<HTMLElement>(`.bid__status`, container);
-		this._selector = container.querySelector(`.bid__selector-input`);
+// 	constructor(container: HTMLElement, actions?: ICardActions) {
+// 		super('bid', container, actions);
+// 		this._amount = ensureElement<HTMLElement>(`.bid__amount`, container);
+// 		this._status = ensureElement<HTMLElement>(`.bid__status`, container);
+// 		this._selector = container.querySelector(`.bid__selector-input`);
 
-		if (!this._button && this._selector) {
-			this._selector.addEventListener('change', (event: MouseEvent) => {
-				actions?.onClick?.(event);
-			});
-		}
-	}
-}
+// 		if (!this._button && this._selector) {
+// 			this._selector.addEventListener('change', (event: MouseEvent) => {
+// 				actions?.onClick?.(event);
+// 			});
+// 		}
+// 	}
+// }
