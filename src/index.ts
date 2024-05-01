@@ -9,9 +9,10 @@ import { ModalItem, CatalogItem, ItemInBasket } from './components/Card';
 import { cloneTemplate, createElement, ensureElement } from './utils/utils';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
-// import { IOrderForm } from './types';
-import { Order } from './components/Order';
+import { IOrderForm, ICustomerForm } from './types';
+import { Contacts, Order } from './components/Order';
 import { Card } from './components/Card';
+import { Success } from './components/common/Success';
 const events = new EventEmitter();
 const api = new LarekAPI(CDN_URL, API_URL);
 
@@ -32,6 +33,7 @@ const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 // const tabsTemplate = ensureElement<HTMLTemplateElement>('#tabs');
 // const soldTemplate = ensureElement<HTMLTemplateElement>('#sold');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
+const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 // Модель данных приложения
@@ -45,9 +47,10 @@ const buttonBasket = ensureElement<HTMLTemplateElement>('.header__basket');
 // const bids = new Basket(cloneTemplate(bidsTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const order = new Order(cloneTemplate(orderTemplate), events);
+const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
 buttonBasket.addEventListener('click', () => {
-	console.log('a');
+	console.log('basketOpened');
 	events.emit('basket:open');
 });
 // Дальше идет бизнес-логика
@@ -75,36 +78,26 @@ api
 		console.error(err);
 	});
 
-// // Отправлена форма заказа
-// events.on('order:submit', () => {
-// 	api
-// 		.orderLots(appData.order)
-// 		.then((result) => {
-// 			const success = new Success(cloneTemplate(successTemplate), {
-// 				onClick: () => {
-// 					modal.close();
-// 					appData.clearBasket();
-// 					events.emit('auction:changed');
-// 				},
-// 			});
+// Отправлена форма заказа
+events.on('order:submit', () => {
+	api
+		.orderLots(appData.order)
+		.then((result) => {
+			const success = new Success(cloneTemplate(successTemplate), {
+				onClick: () => {
+					modal.close();
+					events.emit('auction:changed');
+				},
+			});
 
-// 			modal.render({
-// 				content: success.render({}),
-// 			});
-// 		})
-// 		.catch((err) => {
-// 			console.error(err);
-// 		});
-// });
-
-// // Изменилось состояние валидации формы
-// events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
-// 	const { email, phone } = errors;
-// 	order.valid = !email && !phone;
-// 	order.errors = Object.values({ phone, email })
-// 		.filter((i) => !!i)
-// 		.join('; ');
-// });
+			modal.render({
+				content: success.render({}),
+			});
+		})
+		.catch((err) => {
+			console.error(err);
+		});
+});
 
 // // Изменилось одно из полей
 // events.on(
@@ -113,17 +106,59 @@ api
 // 		appData.setOrderField(data.field, data.value);
 // 	}
 // );
+events.on('formContactsErrors:change', (errors: Partial<IOrderForm>) => {
+	const { email, phone } = errors;
+	contacts.valid = !email && !phone;
+	contacts.errors = Object.values({ phone, email })
+		.filter((i) => !!i)
+		.join('; ');
+});
+
+// Изменилось одно из полей
+events.on(
+	/^order\..*:change/,
+	(data: { field: keyof IOrderForm; value: string }) => {
+		appData.setOrderField(data.field, data.value);
+	}
+);
 
 // Открыть форму заказа
 events.on('order:open', () => {
 	modal.render({
 		content: order.render({
-			phone: '',
-			email: '',
 			valid: false,
+			address: '',
 			errors: [],
 		}),
 	});
+});
+
+events.on('contacts:open', () => {
+	modal.render({
+		content: contacts.render({
+			valid: false,
+			phone: '',
+			email: '',
+			errors: [],
+		}),
+	});
+});
+
+// // Изменилось состояние валидации формы
+events.on('formOrderErrors:change', (errors: Partial<ICustomerForm>) => {
+	const address = errors;
+	if (Object.keys(address).length === 0) {
+		order.valid = true;
+	} else {
+		order.valid = false;
+	}
+	console.log(!address);
+	// appData.validateOrder();
+	// order.valid = !address;
+	// order.valid = !email && !phone;
+	// order.errors = Object.values({ phone, email })
+	// 	.filter((i) => !!i)
+	// 	.join('; ');
 });
 
 events.on('basket:open', () => {

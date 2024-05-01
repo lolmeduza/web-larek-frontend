@@ -18,6 +18,10 @@ export interface IOrder extends ICustomerForm {
 	items: ICard[];
 }
 
+export interface IOrderForm {
+	email: string;
+	phone: string;
+}
 export interface IOrderResult {
 	id: string;
 }

@@ -83,6 +83,26 @@ export class AppState extends Model<IAppState> {
 		this.emitChanges('preview:changed', item);
 	}
 
+	setContactsField(field: keyof ICustomerForm, value: string) {
+		this.order[field] = value;
+
+		if (this.validateContacts()) {
+			this.events.emit('order:ready', this.order);
+		}
+	}
+
+	validateContacts() {
+		const errors: typeof this.formErrors = {};
+		if (!this.order.email) {
+			errors.email = 'Необходимо указать email';
+		}
+		if (!this.order.phone) {
+			errors.phone = 'Необходимо указать телефон';
+		}
+		this.formErrors = errors;
+		this.events.emit('formContactsErrors:change', this.formErrors);
+		return Object.keys(errors).length === 0;
+	}
 	setOrderField(field: keyof ICustomerForm, value: string) {
 		this.order[field] = value;
 
@@ -93,14 +113,11 @@ export class AppState extends Model<IAppState> {
 
 	validateOrder() {
 		const errors: typeof this.formErrors = {};
-		if (!this.order.email) {
-			errors.email = 'Необходимо указать email';
-		}
-		if (!this.order.phone) {
-			errors.phone = 'Необходимо указать телефон';
+		if (!this.order.address) {
+			errors.address = 'Необходимо указать адрес';
 		}
 		this.formErrors = errors;
-		this.events.emit('formErrors:change', this.formErrors);
+		this.events.emit('formOrderErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
 	}
 }
