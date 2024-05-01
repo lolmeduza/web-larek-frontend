@@ -3,7 +3,7 @@ import {
 	cloneTemplate,
 	createElement,
 	ensureElement,
-	// formatNumber,
+	formatNumber,
 } from '../../utils/utils';
 import { EventEmitter } from '../base/events';
 
@@ -27,6 +27,7 @@ export class Basket extends Component<IBasketView> {
 
 		this._list = ensureElement<HTMLElement>('.basket__list', this.container);
 		this._price = this.container.querySelector('.basket__price');
+		// this._price = ensureElement<HTMLElement>('.basket__price', this.container);
 		this._button = this.container.querySelector('.basket__button');
 
 		if (this._button) {
@@ -58,7 +59,7 @@ export class Basket extends Component<IBasketView> {
 		}
 	}
 
-	// set total(total: number) {
-	// 	this.setText(this._total, formatNumber(total));
-	// }
+	set totalPrice(price: number) {
+		this.setText(this._price, formatNumber(price));
+	}
 }

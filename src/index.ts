@@ -5,7 +5,7 @@ import { LarekAPI } from './components/LarekAPI';
 import { API_URL, CDN_URL } from './utils/constants';
 import { AppState, CatalogLoad, CardItem } from './components/AppData';
 import { Page } from './components/Page';
-import { Auction, ModalItem, CatalogItem } from './components/Card';
+import { ModalItem, CatalogItem, ItemInBasket } from './components/Card';
 import { cloneTemplate, createElement, ensureElement } from './utils/utils';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
@@ -23,6 +23,8 @@ events.onAll(({ eventName, data }) => {
 // Все шаблоны
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const basketElementTemplate =
+	ensureElement<HTMLTemplateElement>('#card-basket');
 // const auctionTemplate = ensureElement<HTMLTemplateElement>('#auction');
 // const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#bid'); //jest'
 // const bidsTemplate = ensureElement<HTMLTemplateElement>('#bids');
@@ -124,62 +126,11 @@ events.on('order:open', () => {
 	});
 });
 
-// // Открыть активные лоты
-// events.on('bids:open', () => {
-// 	modal.render({
-// 		content: createElement<HTMLElement>('div', {}, [
-// 			tabs.render({
-// 				selected: 'active',
-// 			}),
-// 			bids.render(),
-// 		]),
-// 	});
-// });
-
 events.on('basket:open', () => {
 	modal.render({
 		content: createElement<HTMLElement>('div', {}, [basket.render({})]),
 	});
 });
-
-// // Изменения в лоте, но лучше все пересчитать
-// events.on('auction:changed', () => {
-// 	page.counter = appData.getClosedLots().length;
-// 	bids.items = appData.getActiveLots().map((item) => {
-// 		const card = new BidItem(cloneTemplate(cardBasketTemplate), {
-// 			onClick: () => events.emit('preview:changed', item),
-// 		});
-// 		return card.render({
-// 			title: item.title,
-// 			image: item.image,
-// 			status: {
-// 				amount: item.price,
-// 				status: item.isMyBid,
-// 			},
-// 		});
-// 	});
-// 	let total = 0;
-// 	basket.items = appData.getClosedLots().map((item) => {
-// 		const card = new BidItem(cloneTemplate(soldTemplate), {
-// 			onClick: (event) => {
-// 				const checkbox = event.target as HTMLInputElement;
-// 				appData.toggleOrderedLot(item.id, checkbox.checked);
-// 				basket.total = appData.getTotal();
-// 				basket.selected = appData.order.items;
-// 			},
-// 		});
-// 		return card.render({
-// 			title: item.title,
-// 			image: item.image,
-// 			status: {
-// 				amount: item.price,
-// 				status: item.isMyBid,
-// 			},
-// 		});
-// 	});
-// 	basket.selected = appData.order.items;
-// 	basket.total = total;
-// });
 
 events.on('card:change', () => {
 	console.log('b');
@@ -192,26 +143,9 @@ events.on('card:select', (item: CardItem) => {
 events.on('preview:changed', (item: CardItem) => {
 	const showItem = (item: CardItem) => {
 		// const cardTemplate
-		console.log('card');
-		const card = new ModalItem(cloneTemplate(cardPreviewTemplate));
-
-		// const buttonToBasket = ensureElement<HTMLTemplateElement>('.card__button');
-		// buttonToBasket.addEventListener('click', () => {
-		// 	console.log('a');
-		// });
-
-		// const auction = new Auction(cloneTemplate(auctionTemplate), {
-		// 	onSubmit: (price) => {
-		// 		item.placeBid(price);
-		// 		auction.render({
-		// 			status: item.status,
-		// 			time: item.timeStatus,
-		// 			label: item.auctionStatus,
-		// 			nextBid: item.nextBid,
-		// 			history: item.history,
-		// 		});
-		// 	},
-		// });
+		const card = new ModalItem(cloneTemplate(cardPreviewTemplate), {
+			onClick: () => events.emit('basket:add', item),
+		});
 
 		console.log(card, 'card');
 
@@ -223,23 +157,53 @@ events.on('preview:changed', (item: CardItem) => {
 				description: item.description.split('\n'),
 			}),
 		});
-
-		// if (item) {
-		// 	api
-		// 		.getCardItem(item.id)
-		// 		.then((result) => {
-		// 			item.description = result.description;
-		// 			item.history = result.history;
-		// 			showItem(item);
-		// 		})
-		// 		.catch((err) => {
-		// 			console.error(err);
-		// 		});
-		// } else {
-		// 	modal.close();
-		// }
 	};
 	showItem(item);
+});
+
+events.on('basket:add', (item) => {
+	console.log('auction:change', item);
+	appData.addToOrder(item as CardItem);
+	page.counter = appData.order.items.length;
+	// let total = 0;
+	basket.items = appData.order.items.map((item) => {
+		basket.totalPrice = appData.getTotal();
+		const card = new ItemInBasket(cloneTemplate(basketElementTemplate), {
+			onClick: (event) => {
+				events.emit('basket:remove', item);
+			},
+		});
+		return card.render({
+			title: item.title,
+			price: item.price,
+			// image: item.image,
+		});
+	});
+	// basket.selected = appData.order.items;
+	// basket.totalPrice = total;
+});
+
+events.on('basket:remove', (item) => {
+	console.log('auction:rem', item);
+	appData.removeInOrder(item as CardItem);
+	page.counter = appData.order.items.length;
+	// let total = 0;
+	basket.items = appData.order.items.map((item) => {
+		// basket.totalPrice = appData.getTotal();
+		const card = new ItemInBasket(cloneTemplate(basketElementTemplate), {
+			onClick: (event) => {
+				events.emit('basket:remove', item);
+			},
+		});
+		return card.render({
+			title: item.title,
+			price: item.price,
+			// image: item.image,
+		});
+	});
+	basket.totalPrice = appData.getTotal();
+	// basket.selected = appData.order.items;
+	// basket.totalPrice = total;
 });
 
 // Блокируем прокрутку страницы если открыта модалка
@@ -251,11 +215,3 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
 	page.locked = false;
 });
-
-// // Получаем лоты с сервера
-// api
-// 	.getLotList()
-// 	.then(appData.setCatalog.bind(appData))
-// 	.catch((err) => {
-// 		console.error(err);
-// 	});

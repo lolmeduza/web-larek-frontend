@@ -15,7 +15,7 @@ export interface ICustomerForm {
 }
 
 export interface IOrder extends ICustomerForm {
-	items: string[];
+	items: ICard[];
 }
 
 export interface IOrderResult {

@@ -15,10 +15,9 @@ export class CardItem extends Model<ICard> {
 	image: string;
 	title: string;
 	price: number;
-
-	addToCard() {
-		this.emitChanges('card:change', { id: this.id, price: this.price });
-	}
+	// addToCard() {
+	// 	this.emitChanges('card:change', { id: this.id, price: this.price });
+	// }
 
 	// placeBid(price: number): void {
 	//     this.price = price;
@@ -59,14 +58,22 @@ export class AppState extends Model<IAppState> {
 	// 	});
 	// }
 
-	getTotal() {
-		return this.order.items.reduce(
-			(a, c) => a + this.catalog.find((it) => it.id === c).price,
-			0
-		);
+	addToOrder(item: CardItem) {
+		this.order.items.push(item);
 	}
 
-	setCatalog(items: ICard[]) {
+	removeInOrder(item: CardItem) {
+		// let good = this.order.items.find(it => it.id===item.id);
+		let index = this.order.items.indexOf(item);
+		this.order.items.splice(index, 1);
+
+		console.log(this.order.items);
+	}
+	getTotal() {
+		return this.order.items.reduce((a, c) => a + c.price, 0);
+	}
+
+	setCatalog(items: CardItem[]) {
 		this.catalog = items.map((item) => new CardItem(item, this.events));
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
