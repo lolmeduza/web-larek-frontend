@@ -35,7 +35,6 @@ const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
-
 // Модель данных приложения
 const appData = new AppState({}, events);
 
@@ -48,6 +47,12 @@ const buttonBasket = ensureElement<HTMLTemplateElement>('.header__basket');
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const order = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
+// const tabs = new Tabs(cloneTemplate(tabsTemplate), {
+// 	onClick: (name) => {
+// 		if (name === 'closed') events.emit('basket:open');
+// 		else events.emit('bids:open');
+// 	},
+// });
 
 buttonBasket.addEventListener('click', () => {
 	console.log('basketOpened');
@@ -79,7 +84,9 @@ api
 	});
 
 // Отправлена форма заказа
-events.on('order:submit', () => {
+events.on('contacts:submit', () => {
+	console.log(appData.order);
+
 	api
 		.orderLots(appData.order)
 		.then((result) => {
@@ -100,13 +107,14 @@ events.on('order:submit', () => {
 });
 
 // // Изменилось одно из полей
-// events.on(
-// 	/^order\..*:change/,
-// 	(data: { field: keyof IOrderForm; value: string }) => {
-// 		appData.setOrderField(data.field, data.value);
-// 	}
-// );
-events.on('formContactsErrors:change', (errors: Partial<IOrderForm>) => {
+events.on(
+	/^contacts\..*:change/,
+	(data: { field: keyof IOrderForm; value: string }) => {
+		appData.setContactsField(data.field, data.value);
+	}
+);
+
+events.on('formContactsErrors:change', (errors: Partial<ICustomerForm>) => {
 	const { email, phone } = errors;
 	contacts.valid = !email && !phone;
 	contacts.errors = Object.values({ phone, email })
@@ -117,8 +125,19 @@ events.on('formContactsErrors:change', (errors: Partial<IOrderForm>) => {
 // Изменилось одно из полей
 events.on(
 	/^order\..*:change/,
-	(data: { field: keyof IOrderForm; value: string }) => {
+	(data: { field: keyof ICustomerForm; value: string }) => {
+		// console.log('Data', data);
 		appData.setOrderField(data.field, data.value);
+		console.log(data);
+	}
+);
+
+events.on(
+	/^order\..*:change/,
+	(data: { field: keyof ICustomerForm; value: string }) => {
+		// console.log('Data', data);
+		appData.setPrice(data.field, data.value);
+		console.log(data);
 	}
 );
 
@@ -146,19 +165,13 @@ events.on('contacts:open', () => {
 
 // // Изменилось состояние валидации формы
 events.on('formOrderErrors:change', (errors: Partial<ICustomerForm>) => {
-	const address = errors;
-	if (Object.keys(address).length === 0) {
+	const { address, payment } = errors;
+	// console.log('address', address, 'payment', payment);
+	if (!address && !payment) {
 		order.valid = true;
 	} else {
 		order.valid = false;
 	}
-	console.log(!address);
-	// appData.validateOrder();
-	// order.valid = !address;
-	// order.valid = !email && !phone;
-	// order.errors = Object.values({ phone, email })
-	// 	.filter((i) => !!i)
-	// 	.join('; ');
 });
 
 events.on('basket:open', () => {

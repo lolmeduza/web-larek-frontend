@@ -35,9 +35,11 @@ export class AppState extends Model<IAppState> {
 	basket: string[];
 	catalog: CardItem[];
 	order: IOrder = {
+		payment: '',
 		address: '',
 		email: '',
 		phone: '',
+		total: 0,
 		items: [],
 	};
 	preview: string | null;
@@ -91,6 +93,14 @@ export class AppState extends Model<IAppState> {
 		}
 	}
 
+	setPrice(field: keyof ICustomerForm, value: string) {
+		this.order[field] = value;
+
+		if (this.validateContacts()) {
+			this.events.emit('order:ready', this.order);
+		}
+	}
+
 	validateContacts() {
 		const errors: typeof this.formErrors = {};
 		if (!this.order.email) {
@@ -104,6 +114,7 @@ export class AppState extends Model<IAppState> {
 		return Object.keys(errors).length === 0;
 	}
 	setOrderField(field: keyof ICustomerForm, value: string) {
+		// console.log('Setting', field, value);
 		this.order[field] = value;
 
 		if (this.validateOrder()) {
@@ -115,6 +126,9 @@ export class AppState extends Model<IAppState> {
 		const errors: typeof this.formErrors = {};
 		if (!this.order.address) {
 			errors.address = 'Необходимо указать адрес';
+		}
+		if (!this.order.payment) {
+			errors.payment = 'Необходимо указать способ оплаты';
 		}
 		this.formErrors = errors;
 		this.events.emit('formOrderErrors:change', this.formErrors);

@@ -29,7 +29,6 @@ export class Basket extends Component<IBasketView> {
 		this._price = this.container.querySelector('.basket__price');
 		// this._price = ensureElement<HTMLElement>('.basket__price', this.container);
 		this._button = this.container.querySelector('.basket__button');
-
 		if (this._button) {
 			this._button.addEventListener('click', () => {
 				console.log('a');
@@ -38,6 +37,7 @@ export class Basket extends Component<IBasketView> {
 		}
 
 		this.items = [];
+		console.log((this.items = []));
 	}
 
 	set items(items: HTMLElement[]) {

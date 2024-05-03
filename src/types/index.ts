@@ -12,10 +12,12 @@ export interface ICustomerForm {
 	address: string;
 	email: string;
 	phone: string;
+	payment: string;
 }
 
 export interface IOrder extends ICustomerForm {
 	items: ICard[];
+	total: number;
 }
 
 export interface IOrderForm {
