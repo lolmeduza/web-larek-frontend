@@ -116,10 +116,6 @@ export class ModalItem extends Card<HTMLElement> {
 	}
 }
 
-interface IAuctionActions {
-	onSubmit: (price: number) => void;
-}
-
 export class ItemInBasket<T> extends Component<ICard<T>> {
 	protected _title: HTMLElement;
 	protected _image?: HTMLImageElement;
