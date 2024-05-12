@@ -23,7 +23,7 @@ export class Form<T> extends Component<IFormState> {
 	}
 
 	protected onInputChange(field: keyof T, value: string) {
-		console.log(`${this.container.name}.${String(field)}:change`);
+		// console.log(`${this.container.name}.${String(field)}:change`);
 		this.events.emit(`${this.container.name}.${String(field)}:change`, {
 			field,
 			value,
@@ -35,9 +35,7 @@ export class Form<T> extends Component<IFormState> {
 	}
 
 	render(state: Partial<T> & IFormState) {
-		// const {valid, errors, ...inputs} = state;
 		super.render(state);
-		// Object.assign(this, inputs);
 		return this.container;
 	}
 }

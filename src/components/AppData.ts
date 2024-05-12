@@ -1,6 +1,3 @@
-// import _ from "lodash";
-// import {dayjs, formatNumber} from "../utils/utils";
-
 import { Model } from './base/Model';
 import { FormErrors, IAppState, ICard, IOrder, ICustomerForm } from '../types';
 
@@ -15,20 +12,6 @@ export class CardItem extends Model<ICard> {
 	image: string;
 	title: string;
 	price: number;
-	// addToCard() {
-	// 	this.emitChanges('card:change', { id: this.id, price: this.price });
-	// }
-
-	// placeBid(price: number): void {
-	//     this.price = price;
-	//     this.history = [...this.history.slice(1), price];
-	//     this.myLastBid = price;
-
-	//     if (price > (this.minPrice * 10)) {
-	//         this.status = 'closed';
-	//     }
-	//     this.emitChanges('auction:changed', { id: this.id, price });
-	// }
 }
 
 export class AppState extends Model<IAppState> {
@@ -41,36 +24,29 @@ export class AppState extends Model<IAppState> {
 		phone: '',
 		total: 0,
 		items: [],
+		itemsIds: [],
 	};
 	preview: string | null;
 	formErrors: FormErrors = {};
-
-	// toggleOrderedLot(id: string, isIncluded: boolean) {
-	// 	if (isIncluded) {
-	// 		this.order.items = _.uniq([...this.order.items, id]);
-	// 	} else {
-	// 		this.order.items = _.without(this.order.items, id);
-	// 	}
-	// }
-
-	// clearBasket() {
-	// 	this.order.items.forEach((id) => {
-	// 		// this.toggleOrderedLot(id, false);
-	// 		this.catalog.find((it) => it.id === id).clearBid();
-	// 	});
-	// }
 
 	addToOrder(item: CardItem) {
 		this.order.items.push(item);
 	}
 
 	removeInOrder(item: CardItem) {
-		// let good = this.order.items.find(it => it.id===item.id);
 		let index = this.order.items.indexOf(item);
 		this.order.items.splice(index, 1);
-
-		console.log(this.order.items);
 	}
+
+	// removeALL(item: CardItem) {
+	// 	this.removeALL
+	// }
+	// clearBasket() {
+	//     this.order.items.forEach(id => {
+	//         this.order.find(it => it.id === id);
+	//     });
+	// }
+
 	getTotal() {
 		return this.order.items.reduce((a, c) => a + c.price, 0);
 	}
@@ -93,12 +69,20 @@ export class AppState extends Model<IAppState> {
 		}
 	}
 
-	setPrice(field: keyof ICustomerForm, value: string) {
-		this.order[field] = value;
+	setPrice(value: number) {
+		this.order.total = value;
+	}
 
-		if (this.validateContacts()) {
-			this.events.emit('order:ready', this.order);
+	setItemsIds() {
+		this.order.items;
+		let i = 0;
+		for (i = 0; i < this.order.items.length; i++) {
+			if (this.order.items[i].price == null) {
+				continue;
+			}
+			this.order.itemsIds.push(this.order.items[i].id);
 		}
+		// console.log(this.order, 'order');
 	}
 
 	validateContacts() {
@@ -114,7 +98,6 @@ export class AppState extends Model<IAppState> {
 		return Object.keys(errors).length === 0;
 	}
 	setOrderField(field: keyof ICustomerForm, value: string) {
-		// console.log('Setting', field, value);
 		this.order[field] = value;
 
 		if (this.validateOrder()) {
@@ -134,4 +117,12 @@ export class AppState extends Model<IAppState> {
 		this.events.emit('formOrderErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
 	}
+}
+export interface ItemOrder {
+	payment: string;
+	address: string;
+	email: string;
+	phone: string;
+	total: number;
+	items: string[];
 }

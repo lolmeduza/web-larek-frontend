@@ -109,11 +109,6 @@ export class ModalItem extends Card<HTMLElement> {
 
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super('card', container, actions);
-		// this._button.addEventListener('click', (event) => {
-		// 	console.log('privet');
-		// 	this.emitChanges('auction:changed', { id: this.id, price: this.price });
-		// });
-		// this._status = ensureElement<HTMLElement>(`.lot__status`, container);
 	}
 
 	set status(content: HTMLElement) {
@@ -133,11 +128,9 @@ export class ItemInBasket<T> extends Component<ICard<T>> {
 	protected _price?: HTMLElement;
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super(container);
-		// this._button = container.querySelector(`card__title`);
 		this._title = ensureElement<HTMLElement>(`.card__title`, container);
 		this._button = container.querySelector(`.card__button`);
 		this._price = container.querySelector(`.card__price`);
-		// this._price = ensureElement<HTMLElement>(`.card__price`, container);
 		if (actions?.onClick) {
 			if (this._button) {
 				this._button.addEventListener('click', actions.onClick);
