@@ -8,6 +8,7 @@ interface ICardActions {
 export interface ICard<T> {
 	title: string;
 	price: number;
+	category: string;
 	description?: string | string[];
 	image: string;
 	status: T;
@@ -19,13 +20,17 @@ export class Card<T> extends Component<ICard<T>> {
 	protected _description?: HTMLElement;
 	protected _button?: HTMLButtonElement;
 	protected _price?: HTMLElement;
+	protected _category: HTMLElement;
 	constructor(
 		protected blockName: string,
 		container: HTMLElement,
 		actions?: ICardActions
 	) {
 		super(container);
-
+		this._category = ensureElement<HTMLElement>(
+			`.${blockName}__category`,
+			container
+		);
 		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
 		this._image = ensureElement<HTMLImageElement>(
 			`.${blockName}__image`,
@@ -38,12 +43,64 @@ export class Card<T> extends Component<ICard<T>> {
 		if (actions?.onClick) {
 			if (this._button) {
 				this._button.addEventListener('click', actions.onClick);
+				// this._button.textContent = 'Добавлено';
+				// this._button.innerText = 'xer';
+				// this.setDisabled(this._button, false);
+				// this._button.style.border = '20px solid red';
 			} else {
 				container.addEventListener('click', actions.onClick);
 			}
 		}
+		if (this._button) {
+			this._button.addEventListener('click', () => {
+				// console.log('basketOpened');
+				this._button.textContent = 'Добавлено';
+			});
+		}
 	}
 
+	set category(value: string) {
+		this.setText(this._category, value);
+
+		this._category.classList.remove('card__category_soft');
+		this._category.classList.remove('card__category_other');
+
+		if (value == 'другое') {
+			this._category.classList.add('card__category_other');
+		}
+		if (value == 'софт-скил') {
+			this._category.classList.add('card__category_soft');
+		}
+		if (value == 'дополнительное') {
+			this._category.classList.add('card__category_additional');
+		}
+		if (value == 'хард-скил') {
+			this._category.classList.add('card__category_hard');
+		}
+		if (value == 'кнопка') {
+			this._category.classList.add('card__category_button');
+		}
+	}
+	// color() {
+	// 	this._button.style.border = '20px solid red';
+	// }
+
+	// get category(): string {
+	// 	return this._category.textContent || '';
+	// }
+	// set category(value: string | string[]) {
+	// 	if (Array.isArray(value)) {
+	// 		this._category.replaceWith(
+	// 			...value.map((str) => {
+	// 				const categoryTemplate = this._category.cloneNode() as HTMLElement;
+	// 				this.setText(categoryTemplate, str);
+	// 				return categoryTemplate;
+	// 			})
+	// 		);
+	// 	} else {
+	// 		this.setText(this._category, value);
+	// 	}
+	// }
 	set id(value: string) {
 		this.container.dataset.id = value;
 	}
@@ -64,8 +121,12 @@ export class Card<T> extends Component<ICard<T>> {
 		this.setImage(this._image, value, this.title);
 	}
 
-	set price(value: number) {
-		this.setText(this._price, value);
+	set price(value: number | string) {
+		if (value == null) {
+			this._price.textContent = 'бесценно';
+		} else {
+			this.setText(this._price, value);
+		}
 	}
 
 	set description(value: string | string[]) {
@@ -152,8 +213,12 @@ export class ItemInBasket<T> extends Component<ICard<T>> {
 		return this._title.textContent || '';
 	}
 
-	set price(value: string) {
-		this.setText(this._price, value);
+	set price(value: number | string) {
+		if (value == null) {
+			this._price.textContent = 'бесценно';
+		} else {
+			this.setText(this._price, value);
+		}
 	}
 
 	set description(value: string | string[]) {

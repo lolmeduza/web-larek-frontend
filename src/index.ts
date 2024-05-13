@@ -6,7 +6,7 @@ import { API_URL, CDN_URL } from './utils/constants';
 import {
 	AppState,
 	CatalogLoad,
-	CardItem,
+	// ICard,
 	ItemOrder,
 } from './components/AppData';
 import { Page } from './components/Page';
@@ -19,7 +19,7 @@ import {
 } from './utils/utils';
 import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
-import { IOrderForm, ICustomerForm } from './types';
+import { IOrderForm, ICustomerForm, ICard } from './types';
 import { Contacts, Order } from './components/Order';
 import { Card } from './components/Card';
 import { Success } from './components/common/Success';
@@ -59,9 +59,11 @@ events.on<CatalogLoad>('items:changed', () => {
 		const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
 		});
+		console.log(item.category);
 		return card.render({
 			title: item.title,
 			price: item.price,
+			category: item.category,
 			image: item.image,
 			description: item.about,
 		});
@@ -77,8 +79,7 @@ api
 
 events.on('contacts:submit', () => {
 	console.log(appData.order);
-
-	let data = {
+	const data = {
 		payment: appData.order.payment,
 		address: appData.order.address,
 		email: appData.order.email,
@@ -93,7 +94,7 @@ events.on('contacts:submit', () => {
 				onClick: () => {
 					// appData.setPrice(appData.getTotal());
 					// console.log(data);
-					modal.close();
+					modal.close(); ////////////////////ЗДЕСЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 					// appData.clearBasket();
 					appData.order = {
@@ -188,20 +189,21 @@ events.on('basket:open', () => {
 	}
 });
 
-events.on('card:change', () => {
-	// console.log('b');
-});
+// events.on('card:change', () => {
+// 	// console.log('b');
+// });
 
-events.on('card:select', (item: CardItem) => {
+events.on('card:select', (item: ICard) => {
 	appData.setPreview(item);
 });
 
-events.on('preview:changed', (item: CardItem) => {
-	const showItem = (item: CardItem) => {
+events.on('preview:changed', (item: ICard) => {
+	const showItem = (item: ICard) => {
 		const card = new ModalItem(cloneTemplate(cardPreviewTemplate), {
 			onClick: () => events.emit('basket:add', item),
 		});
 
+		// card.color();
 		// console.log(card, 'card');
 
 		modal.render({
@@ -209,6 +211,7 @@ events.on('preview:changed', (item: CardItem) => {
 				title: item.title,
 				price: item.price,
 				image: item.image,
+				category: item.category,
 				description: item.description.split('\n'),
 			}),
 		});
@@ -216,12 +219,10 @@ events.on('preview:changed', (item: CardItem) => {
 	showItem(item);
 });
 
-events.on('basket:add', (item) => {
-	// console.log('auction:change', item);
-	appData.addToOrder(item as CardItem);
+events.on('basket:change', (item) => {
 	page.counter = appData.order.items.length;
+	basket.totalPrice = appData.getTotal();
 	basket.items = appData.order.items.map((item) => {
-		basket.totalPrice = appData.getTotal();
 		const card = new ItemInBasket(cloneTemplate(basketElementTemplate), {
 			onClick: (event) => {
 				events.emit('basket:remove', item);
@@ -234,23 +235,30 @@ events.on('basket:add', (item) => {
 	});
 });
 
+events.on('basket:add', (item) => {
+	// console.log('auction:change', item);
+	appData.addToOrder(item as ICard);
+	events.emit('basket:change', item);
+});
+
 events.on('basket:remove', (item) => {
 	// console.log('auction:rem', item);
-	appData.removeInOrder(item as CardItem);
-	page.counter = appData.order.items.length;
-	basket.items = appData.order.items.map((item) => {
-		const card = new ItemInBasket(cloneTemplate(basketElementTemplate), {
-			onClick: (event) => {
-				events.emit('basket:remove', item);
-				basket.totalPrice = appData.getTotal();
-			},
-		});
-		return card.render({
-			title: item.title,
-			price: item.price,
-		});
-	});
-	basket.totalPrice = appData.getTotal();
+	appData.removeInOrder(item as ICard);
+	events.emit('basket:change', item);
+	// page.counter = appData.order.items.length;
+	// basket.items = appData.order.items.map((item) => {
+	// 	const card = new ItemInBasket(cloneTemplate(basketElementTemplate), {
+	// 		onClick: (event) => {
+	// 			events.emit('basket:remove', item);
+	// 			basket.totalPrice = appData.getTotal();
+	// 		},
+	// 	});
+	// 	return card.render({
+	// 		title: item.title,
+	// 		price: item.price,
+	// 	});
+	// });
+	// basket.totalPrice = appData.getTotal();
 	if (appData.getTotal() <= 0) {
 		basket.valid = false;
 	} else {

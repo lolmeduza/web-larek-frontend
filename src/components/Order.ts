@@ -38,12 +38,18 @@ export class Order extends Form<ICustomerForm> {
 		) as HTMLButtonElement;
 		this._cardButton.addEventListener('click', () => {
 			// console.log('card');
+
 			// console.log(`${this.container.name}.payment:change`);
 			this.events.emit(`${this.container.name}.payment:change`, {
 				field: 'payment',
 				value: 'online',
 			});
 		});
+		// if (this._cashButton) {!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// 	this._cashButton.style.border = '1px solid white';
+		// } else if (this._cardButton) {
+		// 	this._cardButton.style.border = '1px solid white';
+		// }
 	}
 	set card(value: string) {
 		(this.container.elements.namedItem('card') as HTMLButtonElement).value =

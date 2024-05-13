@@ -2,21 +2,22 @@ import { Model } from './base/Model';
 import { FormErrors, IAppState, ICard, IOrder, ICustomerForm } from '../types';
 
 export type CatalogLoad = {
-	catalog: CardItem[];
+	catalog: ICard[];
 };
 
-export class CardItem extends Model<ICard> {
-	about: string;
-	description: string;
-	id: string;
-	image: string;
-	title: string;
-	price: number;
-}
+// export class ICard extends Model<ICard> {
+// 	about: string;
+// 	category: string;
+// 	description: string;
+// 	id: string;
+// 	image: string;
+// 	title: string;
+// 	price: number;
+// }
 
 export class AppState extends Model<IAppState> {
 	basket: string[];
-	catalog: CardItem[];
+	catalog: ICard[];
 	order: IOrder = {
 		payment: '',
 		address: '',
@@ -29,16 +30,16 @@ export class AppState extends Model<IAppState> {
 	preview: string | null;
 	formErrors: FormErrors = {};
 
-	addToOrder(item: CardItem) {
+	addToOrder(item: ICard) {
 		this.order.items.push(item);
 	}
 
-	removeInOrder(item: CardItem) {
+	removeInOrder(item: ICard) {
 		let index = this.order.items.indexOf(item);
 		this.order.items.splice(index, 1);
 	}
 
-	// removeALL(item: CardItem) {
+	// removeALL(item: ICard) {
 	// 	this.removeALL
 	// }
 	// clearBasket() {
@@ -51,12 +52,12 @@ export class AppState extends Model<IAppState> {
 		return this.order.items.reduce((a, c) => a + c.price, 0);
 	}
 
-	setCatalog(items: CardItem[]) {
-		this.catalog = items.map((item) => new CardItem(item, this.events));
+	setCatalog(items: ICard[]) {
+		this.catalog = items;
 		this.emitChanges('items:changed', { catalog: this.catalog });
 	}
 
-	setPreview(item: CardItem) {
+	setPreview(item: ICard) {
 		this.preview = item.id;
 		this.emitChanges('preview:changed', item);
 	}
