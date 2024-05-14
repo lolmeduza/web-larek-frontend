@@ -17,7 +17,6 @@ export class Order extends Form<ICustomerForm> {
 			this.container
 		);
 		this._nextButton.addEventListener('click', () => {
-			// console.log('nextButton');
 			this.events.emit(`contacts:open`);
 		});
 
@@ -25,31 +24,26 @@ export class Order extends Form<ICustomerForm> {
 			'cash'
 		) as HTMLButtonElement;
 		this._cashButton.addEventListener('click', () => {
-			// console.log('cash');
 			this.cash = 'cash';
-			// console.log(`${this.container.name}.payment:change`);
+			this._cashButton.style.border = '1px solid white';
+			this._cardButton.style.border = '0px';
 			this.events.emit(`${this.container.name}.payment:change`, {
 				field: 'payment',
 				value: 'cash',
 			});
 		});
+
 		this._cardButton = this.container.elements.namedItem(
 			'card'
 		) as HTMLButtonElement;
 		this._cardButton.addEventListener('click', () => {
-			// console.log('card');
-
-			// console.log(`${this.container.name}.payment:change`);
+			this._cardButton.style.border = '1px solid white';
+			this._cashButton.style.border = '0px';
 			this.events.emit(`${this.container.name}.payment:change`, {
 				field: 'payment',
 				value: 'online',
 			});
 		});
-		// if (this._cashButton) {!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// 	this._cashButton.style.border = '1px solid white';
-		// } else if (this._cardButton) {
-		// 	this._cardButton.style.border = '1px solid white';
-		// }
 	}
 	set card(value: string) {
 		(this.container.elements.namedItem('card') as HTMLButtonElement).value =
@@ -64,11 +58,9 @@ export class Order extends Form<ICustomerForm> {
 	set address(value: string) {
 		(this.container.elements.namedItem('address') as HTMLInputElement).value =
 			value;
-		// console.log('address' + value);
 	}
 	set valid(value: boolean) {
 		this._nextButton.disabled = !value;
-		// console.log(value);
 	}
 }
 

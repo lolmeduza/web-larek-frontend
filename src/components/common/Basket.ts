@@ -30,13 +30,11 @@ export class Basket extends Component<IBasketView> {
 		this._button = this.container.querySelector('.basket__button');
 		if (this._button) {
 			this._button.addEventListener('click', () => {
-				// console.log('a');
 				events.emit('order:open');
 			});
 		}
 
 		this.items = [];
-		// console.log((this.items = []));
 	}
 
 	set items(items: HTMLElement[]) {
@@ -64,6 +62,5 @@ export class Basket extends Component<IBasketView> {
 	}
 	set valid(value: boolean) {
 		this._button.disabled = !value;
-		// console.log(value);
 	}
 }

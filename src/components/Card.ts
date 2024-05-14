@@ -43,17 +43,12 @@ export class Card<T> extends Component<ICard<T>> {
 		if (actions?.onClick) {
 			if (this._button) {
 				this._button.addEventListener('click', actions.onClick);
-				// this._button.textContent = 'Добавлено';
-				// this._button.innerText = 'xer';
-				// this.setDisabled(this._button, false);
-				// this._button.style.border = '20px solid red';
 			} else {
 				container.addEventListener('click', actions.onClick);
 			}
 		}
 		if (this._button) {
 			this._button.addEventListener('click', () => {
-				// console.log('basketOpened');
 				this._button.textContent = 'Добавлено';
 			});
 		}
@@ -81,26 +76,7 @@ export class Card<T> extends Component<ICard<T>> {
 			this._category.classList.add('card__category_button');
 		}
 	}
-	// color() {
-	// 	this._button.style.border = '20px solid red';
-	// }
 
-	// get category(): string {
-	// 	return this._category.textContent || '';
-	// }
-	// set category(value: string | string[]) {
-	// 	if (Array.isArray(value)) {
-	// 		this._category.replaceWith(
-	// 			...value.map((str) => {
-	// 				const categoryTemplate = this._category.cloneNode() as HTMLElement;
-	// 				this.setText(categoryTemplate, str);
-	// 				return categoryTemplate;
-	// 			})
-	// 		);
-	// 	} else {
-	// 		this.setText(this._category, value);
-	// 	}
-	// }
 	set id(value: string) {
 		this.container.dataset.id = value;
 	}

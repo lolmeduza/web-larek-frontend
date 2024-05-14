@@ -5,16 +5,6 @@ export type CatalogLoad = {
 	catalog: ICard[];
 };
 
-// export class ICard extends Model<ICard> {
-// 	about: string;
-// 	category: string;
-// 	description: string;
-// 	id: string;
-// 	image: string;
-// 	title: string;
-// 	price: number;
-// }
-
 export class AppState extends Model<IAppState> {
 	basket: string[];
 	catalog: ICard[];
@@ -38,15 +28,6 @@ export class AppState extends Model<IAppState> {
 		let index = this.order.items.indexOf(item);
 		this.order.items.splice(index, 1);
 	}
-
-	// removeALL(item: ICard) {
-	// 	this.removeALL
-	// }
-	// clearBasket() {
-	//     this.order.items.forEach(id => {
-	//         this.order.find(it => it.id === id);
-	//     });
-	// }
 
 	getTotal() {
 		return this.order.items.reduce((a, c) => a + c.price, 0);
@@ -83,7 +64,6 @@ export class AppState extends Model<IAppState> {
 			}
 			this.order.itemsIds.push(this.order.items[i].id);
 		}
-		// console.log(this.order, 'order');
 	}
 
 	validateContacts() {
