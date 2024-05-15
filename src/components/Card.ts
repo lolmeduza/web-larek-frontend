@@ -125,32 +125,22 @@ export type CatalogItemStatus = {
 };
 
 export class CatalogItem extends Card<CatalogItemStatus> {
-	protected _status: HTMLElement;
-
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super('card', container, actions);
 	}
 }
 
-export type AuctionStatus = {
-	status: string;
-	time: string;
-	label: string;
-	nextBid: number;
-	history: number[];
-};
-
 export class ModalItem extends Card<HTMLElement> {
-	protected _status: HTMLElement;
-	protected _button: HTMLButtonElement;
+	// protected _status: HTMLElement;
+	// protected _button: HTMLButtonElement;
 
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super('card', container, actions);
 	}
 
-	set status(content: HTMLElement) {
-		this._status.replaceWith(content);
-	}
+	// set status(content: HTMLElement) {
+	// 	this._status.replaceWith(content);
+	// }
 }
 
 export class ItemInBasket<T> extends Component<ICard<T>> {

@@ -48,15 +48,6 @@ export type ICard = {
 	title: string;
 	price: number;
 };
-// export class CardItem extends Model<ICard> {
-// 	about: string;
-// 	category: string;
-// 	description: string;
-// 	id: string;
-// 	image: string;
-// 	title: string;
-// 	price: number;
-// }
 
 export type FormErrors = Partial<Record<keyof ICustomerForm, string>>;
 
