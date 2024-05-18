@@ -20,21 +20,17 @@ export class Card<T> extends Component<ICard<T>> {
 	protected _description?: HTMLElement;
 	protected _button?: HTMLButtonElement;
 	protected _price?: HTMLElement;
-	protected _category: HTMLElement;
+	protected _category?: HTMLElement;
 	constructor(
 		protected blockName: string,
 		container: HTMLElement,
 		actions?: ICardActions
 	) {
 		super(container);
-		this._category = ensureElement<HTMLElement>(
-			`.${blockName}__category`,
-			container
-		);
+		this._category = container.querySelector(`.${blockName}__category`);
 		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-		this._image = ensureElement<HTMLImageElement>(
-			`.${blockName}__image`,
-			container
+		this._image = container.querySelector<HTMLImageElement>(
+			`.${blockName}__image`
 		);
 		this._button = container.querySelector(`.${blockName}__button`);
 		this._description = container.querySelector(`.${blockName}__text`);
@@ -49,31 +45,41 @@ export class Card<T> extends Component<ICard<T>> {
 		}
 		if (this._button) {
 			this._button.addEventListener('click', () => {
-				this._button.textContent = 'Добавлено';
+				this.setText(this._button, 'Добавлено в корзину');
+				this.setDisabled(this._button, true);
 			});
 		}
 	}
+	disableButton() {
+		if (this._button) {
+			this.setText(this._button, 'Добавлено в корзину');
+			this.setDisabled(this._button, true);
+		}
+	}
 
+	addCategoryClass(value: string) {
+		this._category.classList.add(`card__category_${value}`);
+	}
 	set category(value: string) {
 		this.setText(this._category, value);
 
-		this._category.classList.remove('card__category_soft');
-		this._category.classList.remove('card__category_other');
+		this.removeClass(this._category, 'card__category_soft');
+		this.removeClass(this._category, 'card__category_other');
 
 		if (value == 'другое') {
-			this._category.classList.add('card__category_other');
+			this.addCategoryClass(`other`);
 		}
 		if (value == 'софт-скил') {
-			this._category.classList.add('card__category_soft');
+			this.addCategoryClass('soft');
 		}
 		if (value == 'дополнительное') {
-			this._category.classList.add('card__category_additional');
+			this.addCategoryClass('additional');
 		}
 		if (value == 'хард-скил') {
-			this._category.classList.add('card__category_hard');
+			this.addCategoryClass('hard');
 		}
 		if (value == 'кнопка') {
-			this._category.classList.add('card__category_button');
+			this.addCategoryClass('button');
 		}
 	}
 
@@ -101,7 +107,7 @@ export class Card<T> extends Component<ICard<T>> {
 		if (value == null) {
 			this._price.textContent = 'бесценно';
 		} else {
-			this.setText(this._price, value);
+			this.setText(this._price, value + ' синапсов');
 		}
 	}
 
@@ -131,26 +137,16 @@ export class CatalogItem extends Card<CatalogItemStatus> {
 }
 
 export class ModalItem extends Card<HTMLElement> {
-	// protected _status: HTMLElement;
-	// protected _button: HTMLButtonElement;
-
 	constructor(container: HTMLElement, actions?: ICardActions) {
 		super('card', container, actions);
 	}
-
-	// set status(content: HTMLElement) {
-	// 	this._status.replaceWith(content);
-	// }
 }
 
-export class ItemInBasket<T> extends Component<ICard<T>> {
-	protected _title: HTMLElement;
-	protected _image?: HTMLImageElement;
-	protected _description?: HTMLElement;
+export class ItemInBasket<T> extends Card<T> {
 	protected _button?: HTMLButtonElement;
 	protected _price?: HTMLElement;
 	constructor(container: HTMLElement, actions?: ICardActions) {
-		super(container);
+		super('card', container, actions);
 		this._title = ensureElement<HTMLElement>(`.card__title`, container);
 		this._button = container.querySelector(`.card__button`);
 		this._price = container.querySelector(`.card__price`);
@@ -171,33 +167,11 @@ export class ItemInBasket<T> extends Component<ICard<T>> {
 		return this.container.dataset.id || '';
 	}
 
-	set title(value: string) {
-		this.setText(this._title, value);
-	}
-
-	get title(): string {
-		return this._title.textContent || '';
-	}
-
 	set price(value: number | string) {
 		if (value == null) {
 			this._price.textContent = 'бесценно';
 		} else {
 			this.setText(this._price, value);
-		}
-	}
-
-	set description(value: string | string[]) {
-		if (Array.isArray(value)) {
-			this._description.replaceWith(
-				...value.map((str) => {
-					const descTemplate = this._description.cloneNode() as HTMLElement;
-					this.setText(descTemplate, str);
-					return descTemplate;
-				})
-			);
-		} else {
-			this.setText(this._description, value);
 		}
 	}
 }

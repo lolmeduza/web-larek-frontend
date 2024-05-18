@@ -26,6 +26,6 @@ export class Success extends Component<ISuccess> {
 		}
 	}
 	set totalPrice(price: number) {
-		this.setText(this._price, formatNumber(price));
+		this.setText(this._price, 'Списано ' + formatNumber(price) + ' синапсов');
 	}
 }

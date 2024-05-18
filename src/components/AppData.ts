@@ -22,10 +22,11 @@ export class AppState extends Model<IAppState> {
 
 	addToOrder(item: ICard) {
 		this.order.items.push(item);
+		this.setItemsIds();
 	}
 
 	removeInOrder(item: ICard) {
-		let index = this.order.items.indexOf(item);
+		const index = this.order.items.indexOf(item);
 		this.order.items.splice(index, 1);
 	}
 
@@ -43,20 +44,12 @@ export class AppState extends Model<IAppState> {
 		this.emitChanges('preview:changed', item);
 	}
 
-	setContactsField(field: keyof ICustomerForm, value: string) {
-		this.order[field] = value;
-
-		if (this.validateContacts()) {
-			this.events.emit('order:ready', this.order);
-		}
-	}
-
 	setPrice(value: number) {
 		this.order.total = value;
 	}
 
 	setItemsIds() {
-		this.order.items;
+		this.order.itemsIds = [];
 		let i = 0;
 		for (i = 0; i < this.order.items.length; i++) {
 			if (this.order.items[i].price == null) {
@@ -78,10 +71,11 @@ export class AppState extends Model<IAppState> {
 		this.events.emit('formContactsErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
 	}
-	setOrderField(field: keyof ICustomerForm, value: string) {
+
+	setContactsField(field: keyof ICustomerForm, value: string) {
 		this.order[field] = value;
 
-		if (this.validateOrder()) {
+		if (this.validateContacts()) {
 			this.events.emit('order:ready', this.order);
 		}
 	}
@@ -94,11 +88,21 @@ export class AppState extends Model<IAppState> {
 		if (!this.order.payment) {
 			errors.payment = 'Необходимо указать способ оплаты';
 		}
+
 		this.formErrors = errors;
 		this.events.emit('formOrderErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
 	}
+
+	setOrderField(field: keyof ICustomerForm, value: string) {
+		this.order[field] = value;
+
+		if (this.validateOrder()) {
+			this.events.emit('order:ready', this.order);
+		}
+	}
 }
+
 export interface ItemOrder {
 	payment: string;
 	address: string;

@@ -1,4 +1,4 @@
-import { EventEmitter } from './components/base/events';
+import { EventEmitter } from './components/base/Events';
 import './scss/styles.scss';
 import './scss/styles.scss';
 import { LarekAPI } from './components/LarekAPI';
@@ -17,7 +17,7 @@ import {
 	ensureElement,
 	formatNumber,
 } from './utils/utils';
-import { ModalSuccess, Modal } from './components/common/Modal';
+import { Modal } from './components/common/Modal'; //ModalSuccess тут было это
 import { Basket } from './components/common/Basket';
 import { IOrderForm, ICustomerForm, ICard } from './types';
 import { Contacts, Order } from './components/Order';
@@ -38,10 +38,10 @@ const appData = new AppState({}, events);
 
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-const modalSuccess = new ModalSuccess(
-	ensureElement<HTMLElement>('#model__container_success'),
-	events
-);
+// const modalSuccess = new ModalSuccess(
+// 	ensureElement<HTMLElement>('#model__container_success'),
+// 	events
+// );
 
 const buttonBasket = ensureElement<HTMLTemplateElement>('.header__basket');
 const basket = new Basket(cloneTemplate(basketTemplate), events);
@@ -83,40 +83,38 @@ events.on('contacts:submit', () => {
 		total: appData.order.total,
 		items: appData.order.itemsIds,
 	};
+
 	api
 		.orderLots(data)
 		.then((result) => {
 			modal.close();
+
 			const success = new Success(cloneTemplate(successTemplate), {
 				onClick: () => {
-					modalSuccess.close();
-					events.emit('basket:clear');
+					modal.close();
+					appData.order = {
+						payment: '',
+						address: '',
+						email: '',
+						phone: '',
+						total: 0,
+						items: [],
+						itemsIds: [],
+					};
+
+					basket.items = [];
+					basket.totalPrice = 0;
+					page.counter = 0;
 				},
 			});
 			success.totalPrice = appData.getTotal();
-			modalSuccess.render({
+			modal.render({
 				content: success.render({}),
 			});
 		})
 		.catch((err) => {
 			console.error(err);
 		});
-});
-
-events.on('basket:clear', () => {
-	appData.order = {
-		payment: '',
-		address: '',
-		email: '',
-		phone: '',
-		total: 0,
-		items: [],
-		itemsIds: [],
-	};
-	basket.items = [];
-	basket.totalPrice = 0;
-	page.counter = 0;
-	events.emit('auction:changed');
 });
 
 events.on(
@@ -143,7 +141,6 @@ events.on(
 
 events.on('order:open', () => {
 	appData.setPrice(appData.getTotal());
-	appData.setItemsIds();
 	modal.render({
 		content: order.render({
 			valid: false,
@@ -153,7 +150,7 @@ events.on('order:open', () => {
 	});
 });
 
-events.on('contacts:open', () => {
+events.on('order:submit', () => {
 	modal.render({
 		content: contacts.render({
 			valid: false,
@@ -170,6 +167,9 @@ events.on('formOrderErrors:change', (errors: Partial<ICustomerForm>) => {
 		order.valid = true;
 	} else {
 		order.valid = false;
+		order.errors = Object.values({ address, payment })
+			.filter((i) => !!i)
+			.join('; ');
 	}
 });
 
@@ -190,10 +190,19 @@ events.on('card:select', (item: ICard) => {
 
 events.on('preview:changed', (item: ICard) => {
 	const showItem = (item: ICard) => {
+		// if (item.id==appData.order.itemsIds.includes()) {
+		// }
 		const card = new ModalItem(cloneTemplate(cardPreviewTemplate), {
 			onClick: () => events.emit('basket:add', item),
 		});
-
+		appData.order.itemsIds;
+		let i = 0;
+		for (i = 0; i < appData.order.itemsIds.length; i++) {
+			if (item.id == appData.order.itemsIds[i]) {
+				card.disableButton();
+			}
+			// appData.order.itemsIds.push(appData.order.items[i].id);
+		}
 		modal.render({
 			content: card.render({
 				title: item.title,
@@ -225,6 +234,7 @@ events.on('basket:change', (item) => {
 
 events.on('basket:add', (item) => {
 	appData.addToOrder(item as ICard);
+
 	events.emit('basket:change', item);
 });
 

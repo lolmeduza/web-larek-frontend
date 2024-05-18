@@ -5,7 +5,7 @@ import {
 	ensureElement,
 	formatNumber,
 } from '../../utils/utils';
-import { EventEmitter } from '../base/events';
+import { EventEmitter } from '../base/Events';
 
 interface IBasketView {
 	items: HTMLElement[];
@@ -50,17 +50,13 @@ export class Basket extends Component<IBasketView> {
 	}
 
 	set selected(items: string[]) {
-		if (items.length) {
-			this.setDisabled(this._button, false);
-		} else {
-			this.setDisabled(this._button, true);
-		}
+		this.setDisabled(this._button, !items.length);
 	}
 
 	set totalPrice(price: number) {
-		this.setText(this._price, formatNumber(price));
+		this.setText(this._price, formatNumber(price) + ' синапсов');
 	}
 	set valid(value: boolean) {
-		this._button.disabled = !value;
+		this.setDisabled(this._button, !value);
 	}
 }
