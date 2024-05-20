@@ -6,11 +6,11 @@ export abstract class Component<T> {
 	}
 
 	addClass(element: HTMLElement, className: string) {
-		element.classList.add(className);
+		this.toggleClass(element, className, true);
 	}
 
 	removeClass(element: HTMLElement, className: string) {
-		element.classList.remove(className);
+		this.toggleClass(element, className, false);
 	}
 
 	protected setText(element: HTMLElement, value: unknown) {

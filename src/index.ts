@@ -3,21 +3,16 @@ import './scss/styles.scss';
 import './scss/styles.scss';
 import { LarekAPI } from './components/LarekAPI';
 import { API_URL, CDN_URL } from './utils/constants';
-import {
-	AppState,
-	CatalogLoad,
-	// ICard,
-	ItemOrder,
-} from './components/AppData';
+import { AppState, CatalogLoad } from './components/AppData';
 import { Page } from './components/Page';
-import { ModalItem, CatalogItem, ItemInBasket } from './components/Card';
+import { ItemInBasket, Card } from './components/Card';
 import {
 	cloneTemplate,
 	createElement,
 	ensureElement,
 	formatNumber,
 } from './utils/utils';
-import { Modal } from './components/common/Modal'; //ModalSuccess тут было это
+import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
 import { IOrderForm, ICustomerForm, ICard } from './types';
 import { Contacts, Order } from './components/Order';
@@ -26,6 +21,7 @@ const events = new EventEmitter();
 const api = new LarekAPI(CDN_URL, API_URL);
 
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
+
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const basketElementTemplate =
 	ensureElement<HTMLTemplateElement>('#card-basket');
@@ -35,26 +31,16 @@ const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 const appData = new AppState({}, events);
-
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-// const modalSuccess = new ModalSuccess(
-// 	ensureElement<HTMLElement>('#model__container_success'),
-// 	events
-// );
 
-const buttonBasket = ensureElement<HTMLTemplateElement>('.header__basket');
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const order = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
-buttonBasket.addEventListener('click', () => {
-	events.emit('basket:open');
-});
-
 events.on<CatalogLoad>('items:changed', () => {
 	page.catalog = appData.catalog.map((item) => {
-		const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
+		const card = new Card('card', cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
 		});
 		return card.render({
@@ -145,6 +131,7 @@ events.on('order:open', () => {
 		content: order.render({
 			valid: false,
 			address: '',
+			payment: '',
 			errors: [],
 		}),
 	});
@@ -163,14 +150,11 @@ events.on('order:submit', () => {
 
 events.on('formOrderErrors:change', (errors: Partial<ICustomerForm>) => {
 	const { address, payment } = errors;
-	if (!address && !payment) {
-		order.valid = true;
-	} else {
-		order.valid = false;
-		order.errors = Object.values({ address, payment })
-			.filter((i) => !!i)
-			.join('; ');
-	}
+	order.valid = !address && !payment;
+
+	order.errors = Object.values({ address, payment })
+		.filter((i) => !!i)
+		.join('; ');
 });
 
 events.on('basket:open', () => {
@@ -190,9 +174,7 @@ events.on('card:select', (item: ICard) => {
 
 events.on('preview:changed', (item: ICard) => {
 	const showItem = (item: ICard) => {
-		// if (item.id==appData.order.itemsIds.includes()) {
-		// }
-		const card = new ModalItem(cloneTemplate(cardPreviewTemplate), {
+		const card = new Card('card', cloneTemplate(cardPreviewTemplate), {
 			onClick: () => events.emit('basket:add', item),
 		});
 		appData.order.itemsIds;
@@ -201,7 +183,6 @@ events.on('preview:changed', (item: ICard) => {
 			if (item.id == appData.order.itemsIds[i]) {
 				card.disableButton();
 			}
-			// appData.order.itemsIds.push(appData.order.items[i].id);
 		}
 		modal.render({
 			content: card.render({

@@ -58,8 +58,9 @@ export class Card<T> extends Component<ICard<T>> {
 	}
 
 	addCategoryClass(value: string) {
-		this._category.classList.add(`card__category_${value}`);
+		this.toggleClass(this._category, `card__category_${value}`, true);
 	}
+
 	set category(value: string) {
 		this.setText(this._category, value);
 
@@ -105,7 +106,7 @@ export class Card<T> extends Component<ICard<T>> {
 
 	set price(value: number | string) {
 		if (value == null) {
-			this._price.textContent = 'бесценно';
+			this.setText(this._price, 'бесценно');
 		} else {
 			this.setText(this._price, value + ' синапсов');
 		}
@@ -129,18 +130,6 @@ export class Card<T> extends Component<ICard<T>> {
 export type CatalogItemStatus = {
 	label: string;
 };
-
-export class CatalogItem extends Card<CatalogItemStatus> {
-	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('card', container, actions);
-	}
-}
-
-export class ModalItem extends Card<HTMLElement> {
-	constructor(container: HTMLElement, actions?: ICardActions) {
-		super('card', container, actions);
-	}
-}
 
 export class ItemInBasket<T> extends Card<T> {
 	protected _button?: HTMLButtonElement;
@@ -169,7 +158,7 @@ export class ItemInBasket<T> extends Card<T> {
 
 	set price(value: number | string) {
 		if (value == null) {
-			this._price.textContent = 'бесценно';
+			this.setText(this._price, 'бесценно');
 		} else {
 			this.setText(this._price, value);
 		}

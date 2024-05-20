@@ -23,7 +23,7 @@ export class Page extends Component<IPage> {
 		this._basket = ensureElement<HTMLElement>('.header__basket');
 
 		this._basket.addEventListener('click', () => {
-			this.events.emit('bids:open');
+			this.events.emit('basket:open');
 		});
 	}
 
@@ -36,10 +36,6 @@ export class Page extends Component<IPage> {
 	}
 
 	set locked(value: boolean) {
-		if (value) {
-			this._wrapper.classList.add('page__wrapper_locked');
-		} else {
-			this._wrapper.classList.remove('page__wrapper_locked');
-		}
+		this.toggleClass(this._wrapper, 'page__wrapper_locked', value);
 	}
 }

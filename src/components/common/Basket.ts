@@ -49,14 +49,19 @@ export class Basket extends Component<IBasketView> {
 		}
 	}
 
+	toggleButton(state: boolean) {
+		this.setDisabled(this._button, state);
+	}
+
 	set selected(items: string[]) {
-		this.setDisabled(this._button, !items.length);
+		this.toggleButton(!items.length);
 	}
 
 	set totalPrice(price: number) {
 		this.setText(this._price, formatNumber(price) + ' синапсов');
 	}
+
 	set valid(value: boolean) {
-		this.setDisabled(this._button, !value);
+		this.toggleButton(!value);
 	}
 }

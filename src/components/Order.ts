@@ -11,20 +11,24 @@ export class Order extends Form<ICustomerForm> {
 		super(container, events);
 		this._buttons = ensureAllElements<HTMLButtonElement>('.button', container);
 
-		this._cashButton = this._buttons[0];
+		this._cashButton = this.container.elements.namedItem(
+			'cash'
+		) as HTMLButtonElement;
 		this._cashButton.addEventListener('click', () => {
-			this._cashButton.style.border = '1px solid white';
-			this._cardButton.style.border = '0px';
+			this.toggleClass(this._cashButton, 'button_alt-active', true);
+			this.toggleClass(this._cardButton, 'button_alt-active', false);
 			this.events.emit(`${this.container.name}.payment:change`, {
 				field: 'payment',
 				value: 'cash',
 			});
 		});
 
-		this._cardButton = this._buttons[1];
+		this._cardButton = this.container.elements.namedItem(
+			'card'
+		) as HTMLButtonElement;
 		this._cardButton.addEventListener('click', () => {
-			this._cardButton.style.border = '1px solid white';
-			this._cashButton.style.border = '0px';
+			this.toggleClass(this._cardButton, 'button_alt-active', true);
+			this.toggleClass(this._cashButton, 'button_alt-active', false);
 			this.events.emit(`${this.container.name}.payment:change`, {
 				field: 'payment',
 				value: 'online',
